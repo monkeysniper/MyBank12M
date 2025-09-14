@@ -1,28 +1,54 @@
 package com.example.mybank12m.domain.presenter
 
+import android.util.Log
 import com.example.mybank12m.data.model.Account
+import com.example.mybank12m.network.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class AccountPresenter(val view:AccountContracts.View):AccountContracts.Presenter {
+class AccountPresenter(val view: AccountContracts.View) : AccountContracts.Presenter {
+
     override fun loadAccounts() {
-        val testMockAccounts= listOf(
-            Account(
-                id="1",
-                name = "obank",
-                "USD",
-                balance = 1000
-            ),Account(
-                id="2",
-                name = "mbank",
-                "USD",
-                balance = 2000
-            ),Account(
-                id="3",
-                name = "bakai",
-                "USD",
-                balance = 3000
-            ),
-        )
-        view.showAccounts(testMockAccounts)
+
+        ApiClient.accountApi.fetchAccounts().enqueue(object : Callback<List<Account>> {
+            override fun onResponse(
+                call: Call<List<Account>?>,
+                responce: Response<List<Account>?>
+            ) {
+                if (responce.isSuccessful)
+                    view.showAccounts(responce.body() ?: emptyList())
+
+            }
+
+            override fun onFailure(
+                call: Call<List<Account>?>,
+                t: Throwable
+            ) {
+                Log.e("AccountPresenter", "Ошибка при загрузке: ${t.message}", t)
+            }
+        })
     }
 
-}
+    override fun addAccount(account: Account) {
+        ApiClient.accountApi.createAccount(account).enqueue(object : Callback<Account> {
+            override fun onResponse(
+                p0: Call<Account?>,
+                p1: Response<Account?>
+            ) {
+                if (p1.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(
+                p0: Call<Account?>,
+                p1: Throwable
+            ) {
+
+            }
+
+        })
+    }
+
+
+    }
+
