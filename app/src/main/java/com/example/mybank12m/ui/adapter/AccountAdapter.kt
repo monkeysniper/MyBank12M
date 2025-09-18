@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mybank12m.data.model.Account
 import com.example.mybank12m.databinding.ItemBinding
 
-class AccountAdapter:RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
+class AccountAdapter(
+    val onEdit:(Account)->Unit,
+    val onDelete: (String)->Unit
+) :RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private val items = mutableListOf<Account>()
 
@@ -32,13 +35,19 @@ class AccountAdapter:RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     override fun getItemCount(): Int = items.size
 
-    class AccountViewHolder(private val binding: ItemBinding) :
+   inner class AccountViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(account: Account) {
 
              binding.tvName.text = account.name
              binding.tvBalance.text = account.balance.toString()
+            binding.btnChange.setOnClickListener {
+                onEdit(account)
+            }
+            binding.btnDelete.setOnClickListener {
+                account.id?.let{onDelete(it)}
+            }
         }
     }
 }

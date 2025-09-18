@@ -2,6 +2,7 @@ package com.example.mybank12m.domain.presenter
 
 import android.util.Log
 import com.example.mybank12m.data.model.Account
+import com.example.mybank12m.data.model.AccountState
 import com.example.mybank12m.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -49,6 +50,55 @@ class AccountPresenter(val view: AccountContracts.View) : AccountContracts.Prese
         })
     }
 
+    override fun updateFullyAccount(account: Account) {
+        ApiClient.accountApi.updateFullyAccount(account.id!!, account)
+            .enqueue(object : Callback<Unit>{
+                override fun onResponse(
+                    p0: Call<Unit?>,
+                    p1: Response<Unit?>
+                ) {
+                    if (p1.isSuccessful) loadAccounts()
+                }
 
+                override fun onFailure(p0: Call<Unit?>, p1: Throwable) {
+                }
+
+            })
     }
+
+    override fun updateStateAccount(
+        accountId: String,
+        accountState: AccountState
+    ) {
+        ApiClient.accountApi.updateAccountState(accountId,accountState).enqueue(object : Callback<Unit>{
+            override fun onResponse(
+                p0: Call<Unit?>,
+                p1: Response<Unit?>
+            ) {
+                if (p1.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(p0: Call<Unit?>, p1: Throwable) {
+            }
+
+        })
+    }
+
+    override fun deleteAccount(accountId: String) {
+        ApiClient.accountApi.deleteAccount(accountId).enqueue(object : Callback<Unit>{
+            override fun onResponse(
+                p0: Call<Unit?>,
+                p1: Response<Unit?>
+            ) {
+                if (p1.isSuccessful) loadAccounts()
+            }
+
+            override fun onFailure(p0: Call<Unit?>, p1: Throwable) {
+            }
+
+        })
+    }
+
+
+}
 

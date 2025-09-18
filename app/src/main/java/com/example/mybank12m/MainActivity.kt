@@ -2,6 +2,7 @@ package com.example.mybank12m
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -39,13 +40,13 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
     }
 
     private fun showAddDialog() {
-        val binding= DialogBinding.inflate(LayoutInflater.from(this))
-        with(binding){
+        val binding = DialogBinding.inflate(LayoutInflater.from(this))
+        with(binding) {
             AlertDialog.Builder(this@MainActivity)
                 .setTitle("Добавить счет")
                 .setView(binding.root)
-                .setPositiveButton("Добавить"){_, _ ->
-                    val account= Account(
+                .setPositiveButton("Добавить") { _, _ ->
+                    val account = Account(
                         name = etName.text.toString(),
                         currency = etCurrency.text.toString(),
                         balance = etBalance.text.toString().toInt()
@@ -53,14 +54,44 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
                     )
                     presenter.addAccount(account)
                 }
-                .setNegativeButton("Отмена",null)
+                .setNegativeButton("Отмена", null)
+                .show()
+        }
+    }
+
+    private fun showEditDialog(account: Account) {
+        val binding = DialogBinding.inflate(LayoutInflater.from(this))
+        with(binding) {
+            etName.setText(account.name)
+            etBalance.setText(account.balance.toString())
+            etCurrency.setText(account.currency)
+
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("Изменить счет")
+                .setView(binding.root)
+                .setPositiveButton("Изменить") { _, _ ->
+                    val updateAccount = account.copy(
+                        name = etName.text.toString(),
+                        currency = etCurrency.text.toString(),
+                        balance = etBalance.text.toString().toInt()
+                    )
+                    presenter.updateFullyAccount(updateAccount)
+                }
+                .setNegativeButton("Отмена", null)
                 .show()
         }
     }
 
     private fun initAdapter() {
         with(binding) {
-            adapter = AccountAdapter()
+            adapter = AccountAdapter(
+                onEdit = { showEditDialog(it) },
+                onDelete = {
+                    presenter.deleteAccount(it)
+                }
+
+
+            )
             recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
             recyclerView.adapter = adapter
         }
