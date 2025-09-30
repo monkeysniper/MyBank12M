@@ -1,4 +1,4 @@
-package com.example.mybank12m
+package com.example.mybank12m.activity
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +13,9 @@ import com.example.mybank12m.databinding.ActivityMainBinding
 import com.example.mybank12m.databinding.DialogBinding
 import com.example.mybank12m.ui.adapter.AccountAdapter
 import com.example.mybank12m.ui.viewmodel.AccountViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
@@ -112,6 +114,3 @@ class MainActivity : AppCompatActivity() {
         viewModel.loadAccounts()
     }
 }
-
-
-

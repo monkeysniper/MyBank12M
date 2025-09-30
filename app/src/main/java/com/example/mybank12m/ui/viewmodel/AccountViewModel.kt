@@ -6,12 +6,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mybank12m.data.model.Account
 import com.example.mybank12m.data.model.AccountState
-import com.example.mybank12m.network.ApiClient
+import com.example.mybank12m.network.AccountApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class AccountViewModel : ViewModel() {
+@HiltViewModel
+class AccountViewModel @Inject constructor(
+    private val accountApi: AccountApi
+) : ViewModel() {
 
     private val _accounts = MutableLiveData<List<Account>>()
     val accounts: LiveData<List<Account>> = _accounts
@@ -20,7 +25,7 @@ class AccountViewModel : ViewModel() {
     val successMessage: LiveData<String> = _successMessage
 
     fun loadAccounts() {
-        ApiClient.accountApi.fetchAccounts().enqueue(object : Callback<List<Account>> {
+        accountApi.fetchAccounts().enqueue(object : Callback<List<Account>> {
             override fun onResponse(
                 call: Call<List<Account>?>,
                 responce: Response<List<Account>?>
@@ -42,7 +47,7 @@ class AccountViewModel : ViewModel() {
     }
 
     fun addAccount(account: Account) {
-        ApiClient.accountApi.createAccount(account).enqueue(object : Callback<Account> {
+        accountApi.createAccount(account).enqueue(object : Callback<Account> {
             override fun onResponse(
                 p0: Call<Account?>,
                 p1: Response<Account?>
@@ -61,7 +66,7 @@ class AccountViewModel : ViewModel() {
     }
 
     fun updateFullyAccount(account: Account) {
-        ApiClient.accountApi.updateFullyAccount(account.id!!, account)
+        accountApi.updateFullyAccount(account.id!!, account)
             .enqueue(object : Callback<Unit> {
                 override fun onResponse(
                     p0: Call<Unit?>,
@@ -80,7 +85,7 @@ class AccountViewModel : ViewModel() {
         accountId: String,
         accountState: AccountState
     ) {
-        ApiClient.accountApi.updateAccountState(accountId, accountState)
+        accountApi.updateAccountState(accountId, accountState)
             .enqueue(object : Callback<Unit> {
                 override fun onResponse(
                     p0: Call<Unit?>,
@@ -99,7 +104,7 @@ class AccountViewModel : ViewModel() {
     }
 
     fun deleteAccount(accountId: String) {
-        ApiClient.accountApi.deleteAccount(accountId).enqueue(object : Callback<Unit> {
+        accountApi.deleteAccount(accountId).enqueue(object : Callback<Unit> {
             override fun onResponse(
                 p0: Call<Unit?>,
                 p1: Response<Unit?>
